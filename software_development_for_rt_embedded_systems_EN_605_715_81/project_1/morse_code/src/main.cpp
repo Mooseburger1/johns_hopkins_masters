@@ -24,8 +24,6 @@ using pulse::PulseWords;
 // Array should always end with TERMINATING_INT
 constexpr int PULSE_PINS[] = {3, 6, TERMINATING_INT};
 
-const char SENTINEL_CHAR = '\x1A'; // ASCII value for Ctrl+Z
-
 void ConfigurePinModes(const int* pins, int mode) {
   int pin_index = 0;
   while (pins[pin_index] != TERMINATING_INT) {
@@ -44,22 +42,9 @@ void setup()
 
 void loop()
 {
-  while (true) {
-    if (Serial.available()) {
-      char incoming_char = Serial.read();
-
-      // Check for the sentinel character first
-      if (incoming_char == SENTINEL_CHAR) {
-        Serial.println("Exiting Loop");
-        break;
-      }
-
-      // If it's not the sentinel, read the rest of the line
-      String msg_to_encode = String(incoming_char);
-      msg_to_encode += Serial.readStringUntil('\n');
-      msg_to_encode.trim();
-
-      PulseWords(msg_to_encode, PULSE_PINS);
-    }
+  if (Serial.available()) {
+    String msg_to_encode(Serial.readStringUntil('\n'));
+    msg_to_encode.trim();
+    PulseWords(msg_to_encode, PULSE_PINS);
   }
 }
