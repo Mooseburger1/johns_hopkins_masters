@@ -10,7 +10,7 @@ char myPacket[255];
 int dataLen;
 
 RTCTime ParseTimeFromUdp(char myPacket[]) {
-    
+
 }
 
 
@@ -27,6 +27,17 @@ void WaitForClockConfiguration(WiFiUDP& udp, state::AppState& app_state) {
         Serial.println(myPacket);
 
         RTCTime config_time = ParseTimeFromUdp(myPacket);
+
+         // Initialize the RTC
+        RTC.begin();
+
+        // Create an RTCTime object with the desired start time
+        RTCTime startTime(12, Month::SEPTEMBER, 2025, 12, 0, 0, DayOfWeek::FRIDAY, SaveLight::SAVING_TIME_ACTIVE);
+
+        // Set the RTC's time using the RTCTime object
+        RTC.setTime(startTime);
+
+  Serial.println("RTC time has been set.");
 
         app_state.UpdateState(state::States::CONNECTED);
     }
