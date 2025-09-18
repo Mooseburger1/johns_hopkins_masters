@@ -6,40 +6,64 @@
 
 namespace rtc_config {
 namespace {
-char myPacket[255];
+char udp_packet[255];
 int dataLen;
 
-RTCTime ParseTimeFromUdp(char myPacket[]) {
+time_t ParseTimeFromUdp(const char* packet) {
+  // Convert string to unsigned long (time_t)
+  char* end_ptr;
+  unsigned long epoch = strtoul(packet, &end_ptr, 10);
+  Serial.print("Converted unix timestamp: ");
+  Serial.println(epoch);
 
+  // Basic validation
+  if (*end_ptr != '\0') {
+    Serial.println("Error: Non-numeric characters in timestamp");
+    return 0;
+  }
+  if (epoch < 946684800UL || epoch > 4102444800UL) { 
+    // sanity check ~2000-01-01 to ~2100-01-01
+    Serial.println("Error: Epoch timestamp out of valid range");
+    return 0;
+  }
+
+  return (time_t)epoch;
 }
-
 
 } // namespace
 
-void WaitForClockConfiguration(WiFiUDP& udp, state::AppState& app_state) {
-  while(app_state.GetState() == state::States::UNINITIALIZED) {
+void WaitForClockConfiguration(WiFiUDP& udp,
+                    state::AppState& app_state, state::States transition_state) {
+
+  char udp_packet[256];
+  
+  auto curr_state = app_state.GetState();
+  while (curr_state == state::States::UNINITIALIZED || curr_state == state::States::DONE) {
     Serial.println("Waiting for UDP Connection...");
 
     if (udp.parsePacket()) {
-        dataLen = udp.available();
-        udp.read(myPacket, 255);
-        myPacket[dataLen] = 0;
-        Serial.println(myPacket);
+      int dataLen = udp.available();
+      udp.read(udp_packet, 255);
+      udp_packet[dataLen] = '\0';
+      Serial.print("Received epoch: ");
+      Serial.println(udp_packet);
 
-        RTCTime config_time = ParseTimeFromUdp(myPacket);
+      time_t config_epoch = ParseTimeFromUdp(udp_packet);
 
-         // Initialize the RTC
+      if (config_epoch != 0) {
         RTC.begin();
+        RTCTime config_time_from_udp(config_epoch);
+        RTC.setTime(config_time_from_udp);
+        Serial.println("RTC time has been set.");
 
-        // Create an RTCTime object with the desired start time
-        RTCTime startTime(12, Month::SEPTEMBER, 2025, 12, 0, 0, DayOfWeek::FRIDAY, SaveLight::SAVING_TIME_ACTIVE);
+        udp.beginPacket(udp.remoteIP(), udp.remotePort());
+        udp.print("OK");
+        udp.endPacket();
 
-        // Set the RTC's time using the RTCTime object
-        RTC.setTime(startTime);
+        app_state.UpdateState(transition_state);
+        return;
+      }
 
-  Serial.println("RTC time has been set.");
-
-        app_state.UpdateState(state::States::CONNECTED);
     }
 
     delay(500);

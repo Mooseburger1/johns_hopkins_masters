@@ -9,7 +9,8 @@
 
 namespace rtc_config {
 
-void WaitForClockConfiguration(WiFiUDP& udp, state::AppState& app_state);
+void WaitForClockConfiguration(WiFiUDP& udp,
+                    state::AppState& app_state, state::States transition_state);
 
 } // rtc_config
 
