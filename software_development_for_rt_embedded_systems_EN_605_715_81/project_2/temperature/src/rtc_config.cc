@@ -10,17 +10,16 @@ char udp_packet[255];
 int dataLen;
 
 time_t ParseTimeFromUdp(const char* packet) {
-  // Convert string to unsigned long (time_t)
   char* end_ptr;
   unsigned long epoch = strtoul(packet, &end_ptr, 10);
   Serial.print("Converted unix timestamp: ");
   Serial.println(epoch);
 
-  // Basic validation
   if (*end_ptr != '\0') {
     Serial.println("Error: Non-numeric characters in timestamp");
     return 0;
   }
+
   if (epoch < 946684800UL || epoch > 4102444800UL) { 
     // sanity check ~2000-01-01 to ~2100-01-01
     Serial.println("Error: Epoch timestamp out of valid range");
@@ -63,12 +62,9 @@ void WaitForClockConfiguration(WiFiUDP& udp,
         app_state.UpdateState(transition_state);
         return;
       }
-
     }
-
     delay(500);
   }
 }
-
 
 } // rtc_config
