@@ -6,17 +6,16 @@ import socket
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-# Import modules from other files
+
 from data_handler import DataManager
 from networking import setup_socket, send_unix_time, receive_data
 from plotting import setup_plot, update_plot
 
-# --- Configuration ---
+# NOTE: SET THE IP ADDRESS TO WHATEVER THE MICROCONTROLLER OUTPUTS
 HOST = "192.168.1.37"
 PORT = 12345
-PLOT_INTERVAL_MS = 1000 # Plot refresh rate (1 second)
+PLOT_INTERVAL_MS = 1000
 
-# --- Global State ---
 stop_receiving = threading.Event() # Use a thread-safe Event for stopping
 user_input_value = None 
 

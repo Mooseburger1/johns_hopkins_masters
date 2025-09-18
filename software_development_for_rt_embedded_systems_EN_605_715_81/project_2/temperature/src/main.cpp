@@ -1,8 +1,8 @@
+#define DHTPIN 11
+#define DHTTYPE DHT11
+
 #include <Arduino.h>
 #include <DHT.h>
-#define DHTPIN 11;
-#define DHTTYPE DHT11;
-
 #include <WiFiS3.h>
 
 #include "configurations.h"
@@ -12,7 +12,6 @@
 #include "wifi_setup.h"
 #include "FspTimer.h"
 
-
 const int PORT = 12345;
 
 volatile bool readyToReadTemp = false;
@@ -20,6 +19,7 @@ volatile bool stableTemp = false;
 volatile uint8_t tickCount = 0;
 
 state::AppState app_state;
+DHT dht(DHTPIN, DHTTYPE);
 FspTimer temp_timer;
 WiFiUDP udp;
 
@@ -69,6 +69,7 @@ bool BeginTimer(float rate_hz) {
 void setup() {
   if (app_state.GetState() == state::States::UNINITIALIZED) {
     Serial.begin(9600);
+    dht.begin();
 
     while (wifi_utils::SetupWiFi(wifi_configs)) {
       Serial.println("Unable to connect to Wifi..."
@@ -109,15 +110,17 @@ void loop() {
   if (app_state.GetState() == state::States::TRANSMITTING) {
     if (readyToReadTemp) {
       readyToReadTemp = false;
-      float temp_f = 72.5;
+
+      // Setting readTemperature to true automatically converts temperature from C to F
+      float tempF = dht.readTemperature(true);
+      Serial.print("tempF ");
+      Serial.println(tempF);
 
       RTCTime curr_time;
       RTC.getTime(curr_time);
-      auto payload = curr_time.toString() + ", " + String(temp_f, 2);
+      auto payload = curr_time.toString() + ", " + String(tempF, 2);
       
       transmit::Transmit(udp, {payload.c_str()});
     }
   }
 }
-
-

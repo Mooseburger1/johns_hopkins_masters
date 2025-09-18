@@ -5,14 +5,14 @@ from data_handler import DataManager # Not strictly needed here, but good practi
 
 def setup_plot():
     """Initializes and configures the Matplotlib plot."""
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(15, 8))
     
     # 'line,' unpacks the single Line2D object returned by ax.plot
-    line, = ax.plot([], [], marker='o', linestyle='-', label='Remote Data') 
+    line, = ax.plot([], [], marker='o', linestyle='-', label='Remote Temp Data') 
     
     ax.set_xlabel("Time")
     ax.set_ylabel("Value")
-    ax.set_title("Real-time UDP Data Reception")
+    ax.set_title("Real-time Temperature")
     ax.legend()
     ax.grid(True, linestyle='--', alpha=0.7)
     plt.tight_layout() 

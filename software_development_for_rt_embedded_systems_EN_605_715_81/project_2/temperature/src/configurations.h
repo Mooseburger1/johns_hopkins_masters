@@ -4,7 +4,7 @@
 namespace config {
 
 inline constexpr char* SSID =  "FibreBox_X6-421B57";
-inline constexpr char* PASSWORD = "insert your pass";
+inline constexpr char* PASSWORD = "Mooseburger1!";
 inline constexpr int PORT = 1234;
 
 }  // namespace config
