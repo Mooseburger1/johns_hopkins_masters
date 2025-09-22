@@ -3,8 +3,8 @@
 
 namespace config {
 
-inline constexpr char* SSID =  "FibreBox_X6-421B57";
-inline constexpr char* PASSWORD = "Mooseburger1!";
+inline constexpr char* SSID =  "your_internet";
+inline constexpr char* PASSWORD = "your_pwd";
 inline constexpr int PORT = 1234;
 
 }  // namespace config
