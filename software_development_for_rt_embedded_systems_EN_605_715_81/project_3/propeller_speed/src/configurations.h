@@ -6,7 +6,7 @@
 namespace wifi_configs {
 
 inline constexpr char* SSID = "FibreBox_X6-421B57";
-inline constexpr char* PWD = "Mooseburger1!";
+inline constexpr char* PWD = "Enter Your Password Here";
 inline constexpr int PORT = 12345;
 
 inline int ConnectToWiFi(const char* ssid = SSID, const char* password = PWD) {

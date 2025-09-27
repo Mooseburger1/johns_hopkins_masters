@@ -8,7 +8,7 @@ def setup_plot():
     fig, ax = plt.subplots(figsize=(15, 8))
     
     # 'line,' unpacks the single Line2D object returned by ax.plot
-    line, = ax.plot([], [], marker='o', linestyle='-', label='Remote Temp Data') 
+    line, = ax.plot([], [], marker='o', linestyle='-', label='Remote RPM Data') 
     
     ax.set_xlabel("Time")
     ax.set_ylabel("RPM")
