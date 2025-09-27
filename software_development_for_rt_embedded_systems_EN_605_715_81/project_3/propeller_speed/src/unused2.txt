@@ -1,0 +1,62 @@
+#ifndef RING_QUEUE_H
+#define RING_QUEUE_H
+
+#include <Arduino.h>
+#include <utility>
+
+namespace buffer {
+const int MAX_BUFFER_SIZE = 10;
+
+template <typename T>
+class RingQueue {
+ public:
+  explicit RingQueue() = default;
+
+  bool Enque(T t) {
+    Serial.print("Task Count: ");
+    Serial.println(task_count_);
+    if (task_count_ >= queue_size_) {
+        Serial.println("ERROR: Task buffer full.");
+        return false;
+    }
+
+    queue_[head_] = std::move(t);
+    ++task_count_;
+    head_ = (head_ + 1) % queue_size_;
+    
+    return true;
+  }
+
+  T Deque() {
+    if (task_count_ == 0) {
+        return nullptr;
+    }
+
+    T t = std::move(queue_[tail_]);
+    --task_count_;
+    tail_ = (tail_ + 1) % queue_size_;
+
+    return std::move(t);
+  }
+
+  void Schedule() {
+    if (task_count_ == 0) { return;}
+
+    T t = queue_[tail_];
+    tail_ = (tail_ + 1) % queue_size_;
+    --task_count_;
+
+    t();
+  }
+
+ private:
+  int head_ = 0;
+  int tail_ = 0;
+  int task_count_ = 0;
+  const int queue_size_ = MAX_BUFFER_SIZE;
+  T queue_[MAX_BUFFER_SIZE];
+};
+
+} // namespace buffer
+
+#endif RING_QUEUE_H
