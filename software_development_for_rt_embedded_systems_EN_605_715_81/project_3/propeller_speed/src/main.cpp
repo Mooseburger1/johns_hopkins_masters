@@ -5,7 +5,9 @@
 #include "configurations.h"
 #include "rtc_config.h"
 
+// Pin used exclusively to be a 5V power supply for the phototransistor
 const int PD_POWER_PIN = 2;
+// Pin to read high / low when the propeller breaks the IR beam
 const int SENSOR_PIN = 3;
 const int PROPELLER_BLADES = 2;
 
@@ -41,7 +43,7 @@ Task taskQueue[] = {
 const int numTasks = sizeof(taskQueue) / sizeof(Task);
 
 void CountBladePassIsrFunction() {
-    bladePassCount++;
+    ++bladePassCount;
     lastBladePassTime = millis();
 }
 
@@ -81,6 +83,10 @@ void transmitRPM() {
     Serial.println(payload);
 }
 
+// The runScheduluer loops through all tasks in the queue and exeuctes them if their last executed
+// time is greater than or equal to their expected scheduled interval. The tasks are not dequed from
+// the queue. Instead their last execution time is persisted within and checked at each execution.
+// This removes the need to constantly enqueue the same tasks when it will only ever be these two.
 void runScheduluer() {
     unsigned long now = millis();
     for (int i = 0; i < numTasks; ++i) {
