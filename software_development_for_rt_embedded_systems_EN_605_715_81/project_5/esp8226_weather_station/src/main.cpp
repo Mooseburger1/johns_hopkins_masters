@@ -11,8 +11,8 @@
 const unsigned long interval = 1000 * 60 * 60;
 
 // WIFI Credentials
-const char* ssid = "FibreBox_X6-421B57";
-const char* password = "Mooseburger1!";
+const char* ssid = "your_internet_here";
+const char* password = "your_internet_password_here";
 
 // LED Display Dimensions
 const int SCREEN_WIDTH = 128;
@@ -24,7 +24,7 @@ unsigned long previousMillis = 0;
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // API Key from Weather API
-String api_key = "fcc84de67e75411d844214213251310";
+String api_key = "you_key_here";
 String city = "Zurich";
 
 // API Endpoint for Weather API's "current weather" endpoint
